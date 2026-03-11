@@ -31,6 +31,8 @@ const InvoiceBill = () => {
     handleDownload,
   } = useBillDetails();
 
+  const hasGst = totalIGST > 0 || totalSGST > 0 || totalCGST > 0;
+
   if (isLoading) {
     return <AppLoader tip="Preparing invoice..." fullScreen={false} className="invoice-inline-loader" />;
   }
@@ -67,14 +69,14 @@ const InvoiceBill = () => {
             <div className="invoice-meta">
               <h1>INVOICE</h1>
               <p>Bill No: {billRecord.billNumber || "-"}</p>
-              <p>Date: {billRecord.createdAt ? new Date(billRecord.createdAt).toLocaleDateString() : "-"}</p>
+              <p> Date: {billRecord.purchaseDate ? new Date(billRecord.purchaseDate).toLocaleDateString() : "-"}</p>
             </div>
 
             <div className="info-card">
               <h4>Invoice From</h4>
-              <p>{[company?.address, companyLocation].filter(Boolean).join(", ") || "-"}</p>
+              <p>{[company?.address, companyLocation].filter(Boolean).join(", ") || ""}</p>
               <p>Phone: {company?.phone || "-"}</p>
-              <p>Email: {company?.email || "-"}</p>
+              {company?.email  ? <p>Email: {company?.email || ""}</p> : null}
               <p>GST: {company?.gstNumber?.toUpperCase?.() || "-"}</p>
             </div>
 
@@ -174,23 +176,24 @@ const InvoiceBill = () => {
                 <span>{toCurrency(billRecord.subTotal)}</span>
               </div>
 
-              {totalIGST > 0 ? (
-                <div className="summary-row">
-                  <span>IGST ({formatBillPercent(igstPercent)}%)</span>
-                  <span>{toCurrency(totalIGST)}</span>
-                </div>
-              ) : (
-                <>
+              {hasGst &&
+                (totalIGST > 0 ? (
                   <div className="summary-row">
-                    <span>SGST ({formatBillPercent(sgstPercent)}%)</span>
-                    <span>{toCurrency(totalSGST)}</span>
+                    <span>IGST ({formatBillPercent(igstPercent)}%)</span>
+                    <span>{toCurrency(totalIGST)}</span>
                   </div>
-                  <div className="summary-row">
-                    <span>CGST ({formatBillPercent(cgstPercent)}%)</span>
-                    <span>{toCurrency(totalCGST)}</span>
-                  </div>
-                </>
-              )}
+                ) : (
+                  <>
+                    <div className="summary-row">
+                      <span>SGST ({formatBillPercent(sgstPercent)}%)</span>
+                      <span>{toCurrency(totalSGST)}</span>
+                    </div>
+                    <div className="summary-row">
+                      <span>CGST ({formatBillPercent(cgstPercent)}%)</span>
+                      <span>{toCurrency(totalCGST)}</span>
+                    </div>
+                  </>
+                ))}
 
               <div className="summary-row">
                 <span>Discount</span>

@@ -1,20 +1,20 @@
 import { Form } from "antd";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { addProduct, getProductById, updateProduct } from "../api";
 import { ROUTES } from "../constants/Routes";
 import { notify } from "../utils/notify";
 import { resolveUserMedicalStoreId } from "../utils/medicalStoreScope";
 import type { ProductFormValues } from "../types";
-import { useCompanies, buildCompanyOptions } from "./useCompanies";
 import { useCurrentUser, useUsers, buildUserOptions } from "./useUsers";
 import { getSelectedMedicalStoreId, setProductFormValues } from "./useProductShared";
 
 // ============ Product form data and submit logic ============
 export const useProductForm = (form: ReturnType<typeof Form.useForm<ProductFormValues>>[0]) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { id } = useParams();
   const isEdit = Boolean(id);
   const selectedUserId = (Form.useWatch("userId", form) || "").toString().trim();
@@ -45,36 +45,21 @@ export const useProductForm = (form: ReturnType<typeof Form.useForm<ProductFormV
     [currentUserMedicalStoreId, isAdmin, isEdit, productData, selectedUserId, users]
   );
 
-  const previousMedicalStoreIdRef = useRef(selectedMedicalStoreId);
-  const {
-    data: companiesData,
-    isLoading: isCompaniesLoading,
-    isFetching: isCompaniesFetching,
-  } = useCompanies(selectedMedicalStoreId);
-
   useEffect(() => {
     if (isEdit && productData) {
       setProductFormValues(form, productData);
     }
   }, [form, isEdit, productData]);
 
-  useEffect(() => {
-    if (isEdit) {
-      previousMedicalStoreIdRef.current = selectedMedicalStoreId;
-      return;
-    }
-
-    const previousMedicalStoreId = previousMedicalStoreIdRef.current;
-    if (previousMedicalStoreId !== selectedMedicalStoreId) {
-      form.setFieldsValue({ company: undefined });
-      previousMedicalStoreIdRef.current = selectedMedicalStoreId;
-    }
-  }, [form, isEdit, selectedMedicalStoreId]);
-
   const mutation = useMutation({
     mutationFn: (payload: ProductFormValues) => (isEdit && id ? updateProduct(id, payload) : addProduct(payload)),
     onSuccess: () => {
       notify.success(isEdit ? "Product updated successfully." : "Product added successfully.");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["billableProducts"] });
+      if (isEdit && id) {
+        queryClient.invalidateQueries({ queryKey: ["product", id] });
+      }
       setTimeout(() => navigate(ROUTES.PRODUCTS.GET_PRODUCTS), 900);
     },
     onError: (error) => {
@@ -115,9 +100,6 @@ export const useProductForm = (form: ReturnType<typeof Form.useForm<ProductFormV
     isCurrentUserLoading,
     isUsersLoading,
     isProductLoading,
-    isCompaniesLoading,
-    isCompaniesFetching,
-    filteredCompanyOptions: buildCompanyOptions(companiesData?.companies || [], selectedMedicalStoreId),
     userOptions: buildUserOptions(users),
     mutation,
     handleSubmit,

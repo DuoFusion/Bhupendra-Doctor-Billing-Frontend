@@ -43,6 +43,7 @@ export type BillRecord = {
   _id: string;
   billStatus: string;
   billNumber: string;
+  purchaseDate?: string;
   company?: Pick<CompanyRecord, "_id" | "name" | "logoImage" | "address" | "city" | "state" | "pincode" | "phone" | "email" | "gstNumber"> | string;
   companyName?: string;
   medicalStore?: MedicalStoreRecord | string;
@@ -51,6 +52,7 @@ export type BillRecord = {
   totalGST?: number;
   subTotal?: number;
   grandTotal?: number;
+  gstEnabled?: boolean;
   createdAt?: string;
   updatedAt?: string;
   user?: UserRecord | string;

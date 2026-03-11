@@ -1,4 +1,4 @@
-import { Button, Card, Input, Radio, Select, Spin, Typography } from "antd";
+import { Button, Card, Input, Radio, Select, Spin, Switch, Typography } from "antd";
 import { useBillForm } from "../../../hooks";
 import BillAmountSummary from "./BillAmountSummary";
 import BillItemEditor from "./BillItemEditor";
@@ -37,6 +37,10 @@ const GenerateBillForm = () => {
     setSelectedBillUserId,
     selectedCompany,
     setSelectedCompany,
+    billNumber,
+    setBillNumber,
+    purchaseDate,
+    setPurchaseDate,
     selectedProduct,
     setSelectedProduct,
     qty,
@@ -53,11 +57,13 @@ const GenerateBillForm = () => {
     setPaymentMethod,
     billDiscount,
     setBillDiscount,
+    isGstEnabled,
+    setIsGstEnabled,
     itemErrors,
     formErrors,
     userSelectOptions,
     companySelectOptions,
-    productsForCompany,
+    productsForStore,
     subtotal,
     taxType,
     taxPercent,
@@ -135,31 +141,56 @@ const GenerateBillForm = () => {
             </div>
           )}
 
-          <div>
-            <Typography.Text className="!mb-2 !block">{requiredLabel("Select Company")}</Typography.Text>
-            <Select
-              value={selectedCompany || undefined}
-              onChange={(value) => {
-                setSelectedCompany(value);
-                clearItems();
-                resetItemEditor();
-              }}
-              options={companySelectOptions}
-              showSearch
-              filterOption={(input, option) =>
-                String((option as { searchLabel?: string })?.searchLabel || "").toLowerCase().includes(input.toLowerCase())
-              }
-              placeholder="Select Company"
-              disabled={!selectedMedicalStoreId}
-              className={selectClass}
-              loading={Boolean(selectedMedicalStoreId) && isCompaniesLoading}
-            />
-            {formErrors.company && <p className="mt-2.5 text-sm text-red-600">{formErrors.company}</p>}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div>
+              <Typography.Text className="!mb-2 !block">{requiredLabel("Bill Number")}</Typography.Text>
+              <Input
+                type="text"
+                value={billNumber}
+                onChange={(event) => setBillNumber(event.target.value)}
+                required
+                className={inputClass}
+              />
+              {formErrors.billNumber && <p className="mt-2.5 text-sm text-red-600">{formErrors.billNumber}</p>}
+            </div>
+
+            <div>
+              <Typography.Text className="!mb-2 !block">{requiredLabel("Purchase Date")}</Typography.Text>
+              <Input
+                type="date"
+                value={purchaseDate}
+                onChange={(event) => setPurchaseDate(event.target.value)}
+                required
+                className={inputClass}
+              />
+              {formErrors.purchaseDate && <p className="mt-2.5 text-sm text-red-600">{formErrors.purchaseDate}</p>}
+            </div>
+
+            <div>
+              <Typography.Text className="!mb-2 !block">{requiredLabel("Select Company")}</Typography.Text>
+              <Select
+                value={selectedCompany || undefined}
+                onChange={(value) => {
+                  setSelectedCompany(value);
+                  clearItems();
+                  resetItemEditor();
+                }}
+                options={companySelectOptions}
+                showSearch
+                filterOption={(input, option) =>
+                  String((option as { searchLabel?: string })?.searchLabel || "").toLowerCase().includes(input.toLowerCase())
+                }
+                placeholder="Select Company"
+                disabled={!selectedMedicalStoreId}
+                className={selectClass}
+                loading={Boolean(selectedMedicalStoreId) && isCompaniesLoading}
+              />
+              {formErrors.company && <p className="mt-2.5 text-sm text-red-600">{formErrors.company}</p>}
+            </div>
           </div>
 
           <div className="rounded-xl border border-[#d9e7c8] bg-[#fefffc] p-5">
             <BillItemEditor
-              selectedCompany={selectedCompany}
               selectedProduct={selectedProduct}
               setSelectedProduct={setSelectedProduct}
               qty={qty}
@@ -170,8 +201,8 @@ const GenerateBillForm = () => {
               setMrp={setMrp}
               rate={rate}
               setRate={setRate}
-              productsForCompany={productsForCompany}
-              isProductsLoading={Boolean(selectedCompany) && (isProductsLoading || isProductsFetching)}
+              productsForStore={productsForStore}
+              isProductsLoading={isProductsLoading || isProductsFetching}
               itemErrors={itemErrors}
               editingItemIndex={editingItemIndex}
               itemCount={items.length}
@@ -204,6 +235,16 @@ const GenerateBillForm = () => {
             />
           </div>
 
+          <div>
+            <Typography.Text className="!mb-2 !block">
+              <span className="font-medium text-[#607257]"> GST Apply</span>
+            </Typography.Text>
+            <div className="flex items-center gap-3">
+              <Switch checked={isGstEnabled} onChange={setIsGstEnabled} />
+              <span className="text-sm text-[#607257]">{isGstEnabled ? "On" : "Off"}</span>
+            </div>
+          </div>
+
           <BillAmountSummary
             subtotal={subtotal}
             taxType={taxType}
@@ -213,6 +254,7 @@ const GenerateBillForm = () => {
             igstAmount={igstAmount}
             sgstPercent={sgstPercent}
             cgstPercent={cgstPercent}
+            showGst={isGstEnabled}
             discount={billDiscount}
             grandTotal={grandTotal}
           />

@@ -74,7 +74,6 @@ export const setProductFormValues = (
   form.setFieldsValue({
     name: productData?.name || "",
     category: productData?.category || "",
-    company: productData?.company?._id || "",
     userId: resolveOwnerUserId(productData),
   });
 };

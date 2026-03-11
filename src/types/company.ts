@@ -11,11 +11,11 @@ export type CompanyFormValues = {
   name: string;
   gstNumber: string;
   phone: string;
-  email: string;
-  city: string;
-  state: string;
-  pincode: string;
-  address: string;
+  email?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  address?: string;
   userId?: string;
   medicalStoreId?: string;
 };

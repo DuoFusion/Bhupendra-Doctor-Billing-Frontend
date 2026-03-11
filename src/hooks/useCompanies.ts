@@ -52,6 +52,10 @@ export const setCompanyFormValues = (
   if (!companyData) return;
 
   form.setFieldsValue({
+    userId:
+      (companyData.userId && typeof companyData.userId === "object" ? companyData.userId._id : companyData.userId) ||
+      (companyData.user && typeof companyData.user === "object" ? companyData.user._id : companyData.user) ||
+      "",
     name: companyData.name || "",
     gstNumber: companyData.gstNumber || "",
     phone: companyData.phone || "",
@@ -82,9 +86,7 @@ export const getCompanyScope = ({
   companyData: CompanyRecord | undefined;
 }) => {
   const ownerUserId = isAdmin
-    ? isEdit
-      ? resolveObjectId(companyData?.userId || companyData?.user)
-      : selectedUserId
+    ? selectedUserId || (isEdit ? resolveObjectId(companyData?.userId || companyData?.user) : "")
     : currentUserId;
 
   const ownerUser = users.find((user) => user._id === ownerUserId);
@@ -126,6 +128,8 @@ export const useCompanyDetails = () => {
     onSuccess: () => {
       notify.success("Company deleted successfully.");
       queryClient.invalidateQueries({ queryKey: ["companies"] });
+      if (id) { queryClient.removeQueries({ queryKey: ["company", id] })}
+      
       navigate(ROUTES.COMPANY.GET_COMPANY);
     },
     onError: () => notify.error("Failed to delete company."),

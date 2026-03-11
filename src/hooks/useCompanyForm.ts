@@ -1,5 +1,5 @@
 import { Form } from "antd";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -14,6 +14,7 @@ import { getCompanyScope, setCompanyFormValues } from "./useCompanies";
 // ============ Company form query and mutation logic ============
 export const useCompanyForm = (form: ReturnType<typeof Form.useForm<CompanyFormValues>>[0]) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const isEdit = Boolean(id);
   const [logo, setLogo] = useState<File | null>(null);
@@ -56,6 +57,13 @@ export const useCompanyForm = (form: ReturnType<typeof Form.useForm<CompanyFormV
       isEdit && id ? updateCompany(id, payload) : addCompany(payload),
     onSuccess: () => {
       notify.success(isEdit ? "Company updated successfully." : "Company added successfully.");
+      queryClient.invalidateQueries({ queryKey: ["companies"] });
+      queryClient.refetchQueries({ queryKey: ["companies"] });
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: ["company", id] });
+        queryClient.refetchQueries({ queryKey: ["company", id] });
+      }
+
       setTimeout(() => navigate(ROUTES.COMPANY.GET_COMPANY), 900);
     },
     onError: (error) => {
@@ -77,6 +85,16 @@ export const useCompanyForm = (form: ReturnType<typeof Form.useForm<CompanyFormV
   });
 
   const handleSubmit = (values: CompanyFormValues) => {
+    const normalize = (value?: string) => (value || "").trim();
+    const normalizedName = normalize(values.name);
+    const normalizedGst = normalize(values.gstNumber);
+    const normalizedPhone = normalize(values.phone);
+    const normalizedEmail = normalize(values.email);
+    const normalizedCity = normalize(values.city);
+    const normalizedState = normalize(values.state);
+    const normalizedPincode = normalize(values.pincode);
+    const normalizedAddress = normalize(values.address);
+
     if (!isEdit && !ownerUserId) {
       notify.error(isAdmin ? "Please select user" : "Invalid user session. Please sign in again.");
       return;
@@ -87,19 +105,24 @@ export const useCompanyForm = (form: ReturnType<typeof Form.useForm<CompanyFormV
       return;
     }
 
-    mutation.mutate({
-      name: values.name.trim(),
-      gstNumber: values.gstNumber.trim().toUpperCase(),
-      phone: values.phone.trim(),
-      email: values.email.trim(),
-      city: values.city.trim(),
-      state: values.state.trim(),
-      pincode: values.pincode.trim(),
-      address: values.address.trim(),
+    const shouldSendUserId = isAdmin ? Boolean(ownerUserId) : !isEdit;
+
+    const payload: CompanyFormValues & { logo?: File | null; userId?: string } = {
+      name: normalizedName,
+      gstNumber: normalizedGst ? normalizedGst.toUpperCase() : "",
+      phone: normalizedPhone,
+      email: normalizedEmail,
       medicalStoreId,
       logo,
-      ...(isEdit ? {} : { userId: ownerUserId }),
-    });
+      ...(shouldSendUserId ? { userId: ownerUserId } : {}),
+    };
+
+    if (normalizedCity) payload.city = normalizedCity;
+    if (normalizedState) payload.state = normalizedState;
+    if (normalizedPincode) payload.pincode = normalizedPincode;
+    if (normalizedAddress) payload.address = normalizedAddress;
+
+    mutation.mutate(payload);
   };
 
   return {

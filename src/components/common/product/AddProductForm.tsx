@@ -27,9 +27,6 @@ const AddProductForm = () => {
     isCurrentUserLoading,
     isUsersLoading,
     isProductLoading,
-    isCompaniesLoading,
-    isCompaniesFetching,
-    filteredCompanyOptions,
     userOptions,
     mutation,
     handleSubmit,
@@ -103,22 +100,6 @@ const AddProductForm = () => {
                 ]}
               >
                 <Input placeholder="Product Name" className={inputClass} />
-              </Form.Item>
-            </Col>
-
-            <Col xs={24} md={12}>
-              <Form.Item
-                label={requiredLabel("Company")}
-                name="company"
-                rules={[{ required: true, message: "Please select company" }]}
-              >
-                <Select
-                  options={filteredCompanyOptions}
-                  placeholder="Select Company"
-                  className={selectClass}
-                  disabled={!selectedMedicalStoreId}
-                  loading={Boolean(selectedMedicalStoreId) && (isCompaniesLoading || isCompaniesFetching)}
-                />
               </Form.Item>
             </Col>
 

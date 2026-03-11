@@ -25,6 +25,14 @@ const billStatusTabs = [
   { key: "inactive", label: "Inactive Bills" },
 ] satisfies Array<{ key: BillStatusTab; label: string }>;
 
+const formatBillProducts = (items: BillRecord["items"], maxLength = 28) => {
+  const names = (items || []).map((item) => item?.name).filter(Boolean);
+  const label = names.join(", ");
+  if (!label) return "-";
+  if (label.length <= maxLength) return label;
+  return `${label.slice(0, maxLength).trimEnd()}...`;
+};
+
 const BillTable = () => {
   const {
     navigate,
@@ -70,7 +78,7 @@ const BillTable = () => {
       title: "Status",
       key: "status",
       render: (_, bill) => (
-        <Tag color={bill.billStatus === "Paid" ? "green" : bill.billStatus === "Unpaid" ? "red" : "gold"}>
+        <Tag color={bill.billStatus === "Paid" ? "green" : "red"}>
           {bill.billStatus || "-"}
         </Tag>
       ),
@@ -96,7 +104,7 @@ const BillTable = () => {
       title: "Products",
       key: "products",
       width: 230,
-      render: (_, bill) => bill.items?.map((item) => item.name).filter(Boolean).join(", ") || "-",
+      render: (_, bill) => formatBillProducts(bill.items),
     },
     {
       title: "Company",

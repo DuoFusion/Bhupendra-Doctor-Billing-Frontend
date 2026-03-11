@@ -123,12 +123,6 @@ const ProductTable = () => {
         ]
       : []),
     {
-      title: "Company",
-      dataIndex: ["company", "name"],
-      key: "company",
-      render: (_, record) => <Typography.Text>{record.company?.name || "-"}</Typography.Text>,
-    },
-    {
       title: "Category",
       dataIndex: "category",
       key: "category",
@@ -175,7 +169,7 @@ const ProductTable = () => {
               onChange={(event) => setSearchInput(event.target.value)}
               allowClear
               prefix={<SearchOutlined className="text-[#6d8060]" />}
-              placeholder="Search by product or company"
+              placeholder="Search by product or category"
               className={`${tableInputClass} !w-full sm:!w-[280px] lg:!w-[320px]`}
             />
 

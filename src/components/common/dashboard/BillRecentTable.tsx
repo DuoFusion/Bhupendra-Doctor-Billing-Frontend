@@ -21,6 +21,14 @@ type Props = {
   currentUserRole?: string;
 };
 
+const formatBillProducts = (items: Array<{ name?: string }> = [], maxLength = 28) => {
+  const names = items.map((item) => item?.name).filter(Boolean);
+  const label = names.join(", ");
+  if (!label) return "-";
+  if (label.length <= maxLength) return label;
+  return `${label.slice(0, maxLength).trimEnd()}...`;
+};
+
 const BillRecentTable = ({ bills = [], currentUserRole }: Props) => {
   const navigate = useNavigate();
 
@@ -85,18 +93,16 @@ const BillRecentTable = ({ bills = [], currentUserRole }: Props) => {
 
                   <td className={dashboardTablePrimaryCellClass}>{bill.billNumber}</td>
 
-                  <td className={dashboardTableCellClass}>{bill.items?.[0]?.name || "-"}</td>
+                  <td className={dashboardTableCellClass}>{formatBillProducts(bill.items)}</td>
 
                   <td className={dashboardTableCellClass}>{bill.items?.[0]?.company?.name || "-"}</td>
 
                   <td className={dashboardTableCellClass}>
                     {bill.createdAt ? new Date(bill.createdAt).toLocaleDateString() : "-"}
                   </td>
-
-                  <td className={dashboardTableCellClass}>Rs {bill.totalGST}</td>
-
+                  <td className={dashboardTableCellClass}>Rs {Number(bill.totalGST).toFixed(2)}</td>
                   <td className={dashboardTableCellClass}>{bill.items?.length}</td>
-
+                  
                   {isAdmin && (
                     <td className={`${dashboardTableCellClass} !text-[#6d8060]`}>
                       {renderNameEmail(

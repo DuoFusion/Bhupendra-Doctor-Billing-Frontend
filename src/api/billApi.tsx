@@ -44,9 +44,12 @@ export const getBillById = async (id: string, medicalStoreId?: string) => {
 
 // ============ Add Bill ============
 export const addBill = async (data: {
+  billNumber: string;
+  purchaseDate: string;
   userId: string;
   medicalStoreId?: string;
   company?: string;
+  gstEnabled?: boolean;
   items: {
     product: string;
     qty: number;
@@ -63,9 +66,12 @@ export const addBill = async (data: {
 export const updateBill = async (
   id: string,
   data: {
+    billNumber: string;
+    purchaseDate: string;
     userId: string;
     medicalStoreId?: string;
     company?: string;
+    gstEnabled?: boolean;
     items: {
       product: string;
       qty: number;

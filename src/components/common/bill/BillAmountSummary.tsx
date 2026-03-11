@@ -10,6 +10,7 @@ type BillAmountSummaryProps = {
   igstAmount: number;
   sgstPercent: number;
   cgstPercent: number;
+  showGst: boolean;
   discount: number | "";
   grandTotal: number;
 };
@@ -23,6 +24,7 @@ const BillAmountSummary = ({
   igstAmount,
   sgstPercent,
   cgstPercent,
+  showGst,
   discount,
   grandTotal,
 }: BillAmountSummaryProps) => (
@@ -33,23 +35,24 @@ const BillAmountSummary = ({
       <span>Rs {subtotal.toFixed(2)}</span>
     </div>
 
-    {taxType === "IGST" ? (
-      <div className="mt-2 flex justify-between text-sm">
-        <span>IGST ({formatBillPercent(taxPercent)}%)</span>
-        <span>Rs {igstAmount.toFixed(2)}</span>
-      </div>
-    ) : (
-      <>
+    {showGst &&
+      (taxType === "IGST" ? (
         <div className="mt-2 flex justify-between text-sm">
-          <span>SGST ({formatBillPercent(sgstPercent)}%)</span>
-          <span>Rs {sgstAmount.toFixed(2)}</span>
+          <span>IGST ({formatBillPercent(taxPercent)}%)</span>
+          <span>Rs {igstAmount.toFixed(2)}</span>
         </div>
-        <div className="mt-2 flex justify-between text-sm">
-          <span>CGST ({formatBillPercent(cgstPercent)}%)</span>
-          <span>Rs {cgstAmount.toFixed(2)}</span>
-        </div>
-      </>
-    )}
+      ) : (
+        <>
+          <div className="mt-2 flex justify-between text-sm">
+            <span>SGST ({formatBillPercent(sgstPercent)}%)</span>
+            <span>Rs {sgstAmount.toFixed(2)}</span>
+          </div>
+          <div className="mt-2 flex justify-between text-sm">
+            <span>CGST ({formatBillPercent(cgstPercent)}%)</span>
+            <span>Rs {cgstAmount.toFixed(2)}</span>
+          </div>
+        </>
+      ))}
 
     <div className="mt-2 flex justify-between text-sm">
       <span>Discount</span>

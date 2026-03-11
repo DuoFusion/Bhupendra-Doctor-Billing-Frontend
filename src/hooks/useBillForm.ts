@@ -23,6 +23,8 @@ type ItemErrors = {
 
 type FormErrors = {
   user?: string;
+  billNumber?: string;
+  purchaseDate?: string;
   company?: string;
   items?: string;
   paymentMethod?: string;
@@ -31,6 +33,12 @@ type FormErrors = {
 const emptyItemErrors: ItemErrors = {};
 const emptyFormErrors: FormErrors = {};
 const allowedPaymentMethods = new Set(["Cash", "Credit"]);
+const formatPurchaseDate = (value?: string) => {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toISOString().slice(0, 10);
+};
 
 // ============ Resolve bill edit record ============
 const getEditBillRecord = (data: unknown) => {
@@ -105,6 +113,8 @@ export const useBillForm = () => {
   const [selectedBillUserId, setSelectedBillUserId] = useState("");
   const [selectedMedicalStoreId, setSelectedMedicalStoreId] = useState("");
   const [selectedCompany, setSelectedCompany] = useState("");
+  const [billNumber, setBillNumber] = useState("");
+  const [purchaseDate, setPurchaseDate] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("");
   const [qty, setQty] = useState<number | "">(1);
   const [freeQty, setFreeQty] = useState<number | "">(0);
@@ -114,6 +124,7 @@ export const useBillForm = () => {
   const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
   const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [billDiscount, setBillDiscount] = useState<number | "">(0);
+  const [isGstEnabled, setIsGstEnabled] = useState(true);
   const [itemErrors, setItemErrors] = useState<ItemErrors>(emptyItemErrors);
   const [formErrors, setFormErrors] = useState<FormErrors>(emptyFormErrors);
 
@@ -209,14 +220,22 @@ export const useBillForm = () => {
           ""
       )
     );
+    setBillNumber(String(billRecord?.billNumber || "").trim());
+    setPurchaseDate(formatPurchaseDate(billRecord?.purchaseDate));
     setPaymentMethod(allowedPaymentMethods.has(String(billRecord.paymentMethod || "")) ? String(billRecord.paymentMethod) : "Cash");
     setBillDiscount(billRecord.discount ?? 0);
     setItems(mapBillItems(billRecord));
+    if (typeof billRecord.gstEnabled === "boolean") {
+      setIsGstEnabled(billRecord.gstEnabled);
+    } else {
+      const recordHasGst =
+        Number(billRecord.totalGST || 0) > 0 ||
+        (billRecord.items || []).some((item) => Number(item?.sgst || 0) > 0 || Number(item?.cgst || 0) > 0 || Number(item?.igst || 0) > 0);
+      setIsGstEnabled(recordHasGst);
+    }
   }, [billRecord]);
 
-  const productsForCompany = (productsData?.products || []).filter(
-    (product: any) => resolveObjectId(product.company) === selectedCompany
-  );
+  const productsForStore = productsData?.products || [];
 
   const companySelectOptions = buildBillCompanyOptions(companiesData?.companies || [], billRecord).map((company) => ({
     value: company._id,
@@ -227,7 +246,7 @@ export const useBillForm = () => {
   const subtotal = items.reduce((sum, item) => sum + item.qty * item.rate, 0);
   const taxType = selectedStoreData?.taxType || "SGST_CGST";
   const taxPercent = Math.max(Number(selectedStoreData?.taxPercent) || 0, 0);
-  const gstTotal = (subtotal * taxPercent) / 100;
+  const gstTotal = isGstEnabled ? (subtotal * taxPercent) / 100 : 0;
   const sgstAmount = taxType === "SGST_CGST" ? gstTotal / 2 : 0;
   const cgstAmount = taxType === "SGST_CGST" ? gstTotal / 2 : 0;
   const igstAmount = taxType === "IGST" ? gstTotal : 0;
@@ -238,7 +257,6 @@ export const useBillForm = () => {
   const addItemToList = () => {
     const nextItemErrors: ItemErrors = {};
 
-    if (!selectedCompany) nextItemErrors.product = "Select a company first";
     if (!selectedProduct) nextItemErrors.product = "Please select a product";
     if (qty === "" || Number(qty) < 1) nextItemErrors.qty = "Quantity must be at least 1";
     if (freeQty !== "" && Number(freeQty) < 0) nextItemErrors.freeQty = "Free qty cannot be negative";
@@ -248,7 +266,7 @@ export const useBillForm = () => {
     setItemErrors(nextItemErrors);
     if (Object.keys(nextItemErrors).length > 0) return;
 
-    const product = productsForCompany.find((row: any) => row._id === selectedProduct);
+    const product = productsForStore.find((row: any) => row._id === selectedProduct);
     if (!product) {
       setItemErrors({ product: "Selected product not found" });
       return;
@@ -308,7 +326,10 @@ export const useBillForm = () => {
     mutationFn: (payload: any) => (isEdit && id ? updateBill(id, payload) : addBill(payload)),
     onSuccess: () => {
       notify.success(isEdit ? "Bill updated successfully." : "Bill generated successfully.");
-      queryClient.invalidateQueries({ queryKey: ["bills"] });
+      queryClient.invalidateQueries({ queryKey: ["bills"], refetchType: "all" });
+      queryClient.invalidateQueries({ queryKey: ["dashboardStats"], refetchType: "all" });
+      queryClient.invalidateQueries({ queryKey: ["bill"], refetchType: "all" });
+      queryClient.invalidateQueries({ queryKey: ["singleBill"], refetchType: "all" });
       setTimeout(() => navigate(ROUTES.BILL.GET_BILLS), 900);
     },
     onError: (error) => {
@@ -343,9 +364,11 @@ export const useBillForm = () => {
     if (selectedCompany && !VALIDATION_REGEX.objectId24.test(selectedCompany)) {
       nextFormErrors.company = "Please select a valid company";
     }
+    if (!purchaseDate) nextFormErrors.purchaseDate = "Please select a purchase date";
     if (items.length === 0) nextFormErrors.items = "Add at least one item to generate bill";
     if (!paymentMethod || !allowedPaymentMethods.has(paymentMethod)) nextFormErrors.paymentMethod = "Select a valid payment method";
     if (Number(billDiscount) < 0) nextFormErrors.items = "Bill discount cannot be negative";
+    if (!String(billNumber || "").trim()) nextFormErrors.billNumber = "Please enter a bill number";
 
     const hasInvalidItem = items.some(
       (item) =>
@@ -361,9 +384,12 @@ export const useBillForm = () => {
     if (Object.keys(nextFormErrors).length > 0) return;
 
     mutation.mutate({
+      billNumber: String(billNumber).trim(),
+      purchaseDate,
       userId: String(billOwnerUserId),
       medicalStoreId: billMedicalStoreId,
       company: selectedCompany,
+      gstEnabled: isGstEnabled,
       items: items.map((item) => ({
         product: item.product,
         qty: item.qty,
@@ -391,6 +417,10 @@ export const useBillForm = () => {
     setSelectedBillUserId,
     selectedCompany,
     setSelectedCompany,
+    billNumber,
+    setBillNumber,
+    purchaseDate,
+    setPurchaseDate,
     selectedProduct,
     setSelectedProduct,
     qty,
@@ -407,11 +437,13 @@ export const useBillForm = () => {
     setPaymentMethod,
     billDiscount,
     setBillDiscount,
+    isGstEnabled,
+    setIsGstEnabled,
     itemErrors,
     formErrors,
     userSelectOptions: buildUserOptions(users),
     companySelectOptions,
-    productsForCompany,
+    productsForStore,
     subtotal,
     taxType,
     taxPercent,

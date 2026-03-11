@@ -92,6 +92,7 @@ export const useCompanyTable = () => {
     onSuccess: () => {
       notify.success("Company deleted successfully.");
       refreshCompanies();
+      queryClient.removeQueries({ queryKey: ["company"] });
     },
     onError: () => notify.error("Failed to delete company."),
   });

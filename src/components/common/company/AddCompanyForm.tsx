@@ -4,10 +4,10 @@ import { VALIDATION_MESSAGES, VALIDATION_REGEX } from "../../../constants/valida
 import { getCompanyLogoUrl } from "../../../utils/uploadsUrl";
 import { type CompanyFormValues, useCompanyForm } from "../../../hooks";
 
-const requiredLabel = (label: string) => (
+const requiredLabel = (label: string, isRequired = true) => (
   <span className="font-medium text-[#607257]">
     {label}
-    <span className="ml-1 text-red-500">*</span>
+    {isRequired && <span className="ml-1 text-red-500">*</span>}
   </span>
 );
 
@@ -73,7 +73,7 @@ const AddCompanyForm = () => {
           className={formClassName}
         >
           <Row gutter={[18, 4]}>
-            {isAdmin && !isEdit && (
+            {isAdmin && (
               <Col xs={24} md={12}>
                 <Form.Item
                   label={requiredLabel("Assign User")}
@@ -125,9 +125,7 @@ const AddCompanyForm = () => {
               <Form.Item
                 label={requiredLabel("Phone Number")}
                 name="phone"
-                rules={[
-                  { required: true, message: "Please enter phone number" },
-                ]}
+                rules={[{ required: true, message: "Please enter phone number" }]}
               >
                 <Input type="number" inputMode="numeric" placeholder="Phone Number" maxLength={10} className={inputClass} />
               </Form.Item>
@@ -135,10 +133,9 @@ const AddCompanyForm = () => {
 
             <Col xs={24} md={12}>
               <Form.Item
-                label={requiredLabel("Email")}
+                label={requiredLabel("Email", false)}
                 name="email"
                 rules={[
-                  { required: true, message: "Please enter email address" },
                   { type: "email", message: "Please enter valid email" },
                 ]}
               >
@@ -148,9 +145,8 @@ const AddCompanyForm = () => {
 
             <Col xs={24} md={12}>
               <Form.Item
-                label={requiredLabel("City")}
+                label={requiredLabel("City", false)}
                 name="city"
-                rules={[{ required: true, message: "Please enter city" }]}
               >
                 <Input placeholder="City" className={inputClass} />
               </Form.Item>
@@ -158,9 +154,8 @@ const AddCompanyForm = () => {
 
             <Col xs={24} md={12}>
               <Form.Item
-                label={requiredLabel("State")}
+                label={requiredLabel("State", false)}
                 name="state"
-                rules={[{ required: true, message: "Please enter state" }]}
               >
                 <Input placeholder="State" className={inputClass} />
               </Form.Item>
@@ -168,11 +163,8 @@ const AddCompanyForm = () => {
 
             <Col xs={24} md={12}>
               <Form.Item
-                label={requiredLabel("Pincode")}
+                label={requiredLabel("Pincode", false)}
                 name="pincode"
-                rules={[
-                  { required: true, message: "Please enter pincode" },
-                ]}
               >
                 <Input type="number" inputMode="numeric" placeholder="Pincode" maxLength={6} className={inputClass} />
               </Form.Item>
@@ -180,10 +172,9 @@ const AddCompanyForm = () => {
 
             <Col xs={24} md={12}>
               <Form.Item
-                label={requiredLabel("Address")}
+                label={requiredLabel("Address", false)}
                 name="address"
                 rules={[
-                  { required: true, message: "Please enter company address" },
                   { min: 5, message: "Address must be at least 5 characters" },
                 ]}
               >

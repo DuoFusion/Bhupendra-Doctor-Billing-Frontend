@@ -1,7 +1,6 @@
 import { Button, Input, Select, Typography } from "antd";
 
 type BillItemEditorProps = {
-  selectedCompany: string;
   selectedProduct: string;
   setSelectedProduct: (value: string) => void;
 
@@ -17,7 +16,7 @@ type BillItemEditorProps = {
   rate: string;
   setRate: (value: string) => void;
 
-  productsForCompany: Array<{ _id: string; name: string }>;
+  productsForStore: Array<{ _id: string; name: string }>;
   isProductsLoading?: boolean;
 
   itemErrors: {
@@ -47,7 +46,6 @@ const requiredLabel = (label: string) => (
 );
 
 const BillItemEditor = ({
-  selectedCompany,
   selectedProduct,
   setSelectedProduct,
   qty,
@@ -58,7 +56,7 @@ const BillItemEditor = ({
   setMrp,
   rate,
   setRate,
-  productsForCompany,
+  productsForStore,
   isProductsLoading,
   itemErrors,
   editingItemIndex,
@@ -82,14 +80,13 @@ const BillItemEditor = ({
         <Select
           value={selectedProduct || undefined}
           onChange={setSelectedProduct}
-          options={productsForCompany.map((product) => ({
+          options={productsForStore.map((product) => ({
             value: product._id,
             label: product.name,
           }))}
           placeholder="Select Product"
-          disabled={!selectedCompany}
           className={selectClass}
-          loading={Boolean(selectedCompany) && isProductsLoading}
+          loading={isProductsLoading}
         />
 
         {itemErrors.product && (
@@ -108,7 +105,6 @@ const BillItemEditor = ({
           step={0.01}
           value={mrp}
           onChange={(e) => setMrp(e.target.value)}
-          disabled={!selectedCompany}
           min={0}
           className={inputClass}
         />
@@ -129,7 +125,6 @@ const BillItemEditor = ({
           step={0.01}
           value={rate}
           onChange={(e) => setRate(e.target.value)}
-          disabled={!selectedCompany}
           min={0}
           className={inputClass}
         />
@@ -151,7 +146,6 @@ const BillItemEditor = ({
           onChange={(event) =>
             setQty(event.target.value === "" ? "" : Number(event.target.value))
           }
-          disabled={!selectedCompany}
           min={1}
           className={inputClass}
         />
@@ -173,7 +167,6 @@ const BillItemEditor = ({
           onChange={(event) =>
             setFreeQty(event.target.value === "" ? "" : Number(event.target.value))
           }
-          disabled={!selectedCompany}
           min={0}
           className={inputClass}
         />
@@ -189,7 +182,6 @@ const BillItemEditor = ({
         <Button
           type="primary"
           onClick={onAddItem}
-          disabled={!selectedCompany}
           className="!h-11 !rounded-lg !px-6"
         >
           {editingItemIndex !== null ? "Update Item" : "Add Item"}
