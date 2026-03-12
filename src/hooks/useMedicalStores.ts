@@ -15,7 +15,7 @@ import { getSignatureImageUrl } from "../utils/uploadsUrl";
 export const useMedicalStores = () =>
   useQuery({
     queryKey: ["medicalStores", "productTable"],
-    queryFn: () => getAllMedicalStoresByQuery({ isActive: true }),
+    queryFn: () => getAllMedicalStoresByQuery({ isActive: true, all: true }),
   });
 
 // ============ Medical store details by id ============

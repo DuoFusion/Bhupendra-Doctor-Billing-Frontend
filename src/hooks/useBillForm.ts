@@ -116,7 +116,7 @@ export const useBillForm = () => {
   const [billNumber, setBillNumber] = useState("");
   const [purchaseDate, setPurchaseDate] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("");
-  const [qty, setQty] = useState<number | "">(1);
+  const [qty, setQty] = useState<number | "">(0);
   const [freeQty, setFreeQty] = useState<number | "">(0);
   const [mrp, setMrp] = useState<string>("0");
   const [rate, setRate] = useState<string>("0");
@@ -162,6 +162,7 @@ export const useBillForm = () => {
         billable: true,
         medicalStoreId: selectedMedicalStoreId || undefined,
         isActive: true,
+        all: true,
       }),
     enabled: !!selectedMedicalStoreId,
     placeholderData: keepPreviousData,
@@ -191,7 +192,7 @@ export const useBillForm = () => {
 
   const resetItemEditor = () => {
     setSelectedProduct("");
-    setQty(1);
+    setQty(0);
     setFreeQty(0);
     setMrp("0");
     setRate("0");
@@ -258,10 +259,9 @@ export const useBillForm = () => {
     const nextItemErrors: ItemErrors = {};
 
     if (!selectedProduct) nextItemErrors.product = "Please select a product";
-    if (qty === "" || Number(qty) < 1) nextItemErrors.qty = "Quantity must be at least 1";
+    if (qty !== "" && Number(qty) < 0) nextItemErrors.qty = "Quantity cannot be negative";
     if (freeQty !== "" && Number(freeQty) < 0) nextItemErrors.freeQty = "Free qty cannot be negative";
     if (mrp === "" || Number(mrp) < 0) nextItemErrors.mrp = "MRP must be a valid number";
-    if (rate === "" || Number(rate) <= 0) nextItemErrors.rate = "Purchase price must be greater than 0";
 
     setItemErrors(nextItemErrors);
     if (Object.keys(nextItemErrors).length > 0) return;
@@ -295,7 +295,7 @@ export const useBillForm = () => {
     if (!item) return;
 
     setSelectedProduct(String(item.product));
-    setQty(Number(item.qty) || 1);
+    setQty(Number(item.qty) || 0);
     setFreeQty(Number(item.freeQty) || 0);
     setMrp(String(item.mrp || "0"));
     setRate(String(item.rate || "0"));
@@ -373,11 +373,11 @@ export const useBillForm = () => {
     const hasInvalidItem = items.some(
       (item) =>
         !VALIDATION_REGEX.objectId24.test(String(item.product)) ||
-        Number(item.qty) < 1 ||
+        Number(item.qty) < 0 ||
         Number(item.freeQty || 0) < 0
     );
     if (hasInvalidItem) {
-      nextFormErrors.items = "Please keep valid items: quantity must be at least 1 and free qty cannot be negative";
+      nextFormErrors.items = "Please keep valid items: quantity cannot be negative and free qty cannot be negative";
     }
 
     setFormErrors(nextFormErrors);

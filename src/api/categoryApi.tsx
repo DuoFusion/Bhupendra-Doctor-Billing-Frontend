@@ -13,8 +13,11 @@ export const getCategories = async (params?: {
   addedBy?: string;
   medicalStoreId?: string;
   isActive?: boolean;
+  all?: boolean;
 }) => {
-  const response = await API.get(URL_KEYS.CATEGORY.GET_CATEGORIES, { params });
+  const response = await API.get(URL_KEYS.CATEGORY.GET_CATEGORIES, {
+    params: { all: true, ...params },
+  });
   return response.data;
 };
 
@@ -28,8 +31,11 @@ export const getCategoriesByQuery = async (params: {
   addedBy?: string;
   medicalStoreId?: string;
   isActive?: boolean;
+  all?: boolean;
 }) => {
-  const response = await API.get(URL_KEYS.CATEGORY.GET_CATEGORIES, { params });
+  const response = await API.get(URL_KEYS.CATEGORY.GET_CATEGORIES, {
+    params,
+  });
   return response.data;
 };
 

@@ -39,8 +39,11 @@ export const getAllCompanies = async (params?: {
   order?: "asc" | "desc";
   medicalStoreId?: string;
   isActive?: boolean;
+  all?: boolean;
 }) => {
-  const response = await API.get<CompanyListApiResponse>(URL_KEYS.COMPANY.GET_COMPANY, { params });
+  const response = await API.get<CompanyListApiResponse>(URL_KEYS.COMPANY.GET_COMPANY, {
+    params: { all: true, ...params },
+  });
   return normalizeCompanyListResponse(response.data);
 };
 
@@ -54,8 +57,11 @@ export const getAllCompaniesByQuery = async (params: {
   order?: "asc" | "desc";
   medicalStoreId?: string;
   isActive?: boolean;
+  all?: boolean;
 }) => {
-  const response = await API.get<CompanyListApiResponse>(URL_KEYS.COMPANY.GET_COMPANY, { params });
+  const response = await API.get<CompanyListApiResponse>(URL_KEYS.COMPANY.GET_COMPANY, {
+    params,
+  });
   return normalizeCompanyListResponse(response.data);
 };
 

@@ -43,6 +43,8 @@ const BillTable = () => {
     setSearchInput,
     selectedMedicalStore,
     setSelectedMedicalStore,
+    selectedCompany,
+    setSelectedCompany,
     dateRange,
     onRangeChange,
     page,
@@ -51,6 +53,8 @@ const BillTable = () => {
     setLimit,
     pendingStatus,
     medicalStoreOptions,
+    companyOptions,
+    isCompaniesLoading,
     bills,
     total,
     totalPages,
@@ -228,7 +232,11 @@ const BillTable = () => {
         setSearchInput={setSearchInput}
         selectedMedicalStore={selectedMedicalStore}
         setSelectedMedicalStore={setSelectedMedicalStore}
+        selectedCompany={selectedCompany}
+        setSelectedCompany={setSelectedCompany}
         medicalStoreOptions={medicalStoreOptions}
+        companyOptions={companyOptions}
+        isCompaniesLoading={isCompaniesLoading}
         dateRange={dateRange}
         onRangeChange={onRangeChange}
         onGenerate={() => navigate(ROUTES.BILL.GENERATE_BILL)}

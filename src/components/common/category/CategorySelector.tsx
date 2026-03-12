@@ -53,6 +53,8 @@ const CategorySelector = ({
       value={value || undefined}
       onChange={(v) => onChange(v)}
       placeholder={placeholder}
+      showSearch
+      optionFilterProp="label"
       options={userCategories.map((c: string) => ({ value: c, label: c }))}
       className={className || "!w-full"}
     />

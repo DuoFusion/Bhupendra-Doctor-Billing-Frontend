@@ -60,7 +60,7 @@ const AddUserForm = () => {
   //=========== Fetch Medical Stores List ============
   const { data: storesData, isLoading: isStoresLoading } = useQuery({
     queryKey: ["medicalStores", "userForm"],
-    queryFn: () => getAllMedicalStoresByQuery({ isActive: true }),
+    queryFn: () => getAllMedicalStoresByQuery({ isActive: true, all: true }),
   });
 
   //=========== Set Form Values when Editing User ============

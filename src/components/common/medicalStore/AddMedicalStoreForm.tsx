@@ -90,6 +90,8 @@ const AddMedicalStoreForm = () => {
                 <Select
                   className={selectClass}
                   placeholder="Select tax type"
+                  showSearch
+                  optionFilterProp="label"
                   options={[
                     { value: "SGST_CGST", label: "SGST + CGST" },
                     { value: "IGST", label: "IGST" },

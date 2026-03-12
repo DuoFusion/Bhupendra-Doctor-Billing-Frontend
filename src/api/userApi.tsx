@@ -31,13 +31,17 @@ export const addUser = async (data: FormData | any) => {
 
 // ============ Get All Users ============
 export const getAllUsers = async () => {
-  const response = await API.get<UserListResponse>(URL_KEYS.USER.GET_USERS);
+  const response = await API.get<UserListResponse>(URL_KEYS.USER.GET_USERS, {
+    params: { all: true },
+  });
   return response.data;
 };
 
 // ============ Get All Users By Query ============
-export const getAllUsersByQuery = async (params: { page?: number; limit?: number; search?: string; isActive?: boolean; }) => {
-  const response = await API.get<UserListResponse>(URL_KEYS.USER.GET_USERS, { params });
+export const getAllUsersByQuery = async (params: { page?: number; limit?: number; search?: string; isActive?: boolean; all?: boolean; }) => {
+  const response = await API.get<UserListResponse>(URL_KEYS.USER.GET_USERS, {
+    params,
+  });
   return response.data;
 };
 

@@ -37,7 +37,7 @@ export const useCategoryTable = () => {
   const [statusTab, setStatusTab] = useState<CategoryStatusTab>("active");
   const [searchInput, setSearchInput] = useState("");
   const [searchValue, setSearchValue] = useState("");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortOrder, setSortOrder] = useState<"" | "asc" | "desc">("");
   const [selectedMedicalStore, setSelectedMedicalStore] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -76,8 +76,7 @@ export const useCategoryTable = () => {
     queryFn: () =>
       getCategoriesByQuery({
         search: searchValue || undefined,
-        sortBy: isAdmin ? "addedBy" : "createdAt",
-        order: isAdmin ? sortOrder : "desc",
+        ...(isAdmin && sortOrder ? { sortBy: "addedBy", order: sortOrder } : {}),
         medicalStoreId: isAdmin ? selectedMedicalStore || undefined : undefined,
         isActive: statusTab === "active",
         page,

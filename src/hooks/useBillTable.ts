@@ -8,6 +8,7 @@ import { notify } from "../utils/notify";
 import { filterStoresByIds, resolveUserMedicalStoreIds } from "../utils/medicalStoreScope";
 import { useConfirm } from "../components/common/confirm/ConfirmProvider";
 import { useCurrentUser } from "./useUsers";
+import { buildCompanyOptions, useCompanies } from "./useCompanies";
 import { useMedicalStores } from "./useMedicalStores";
 
 type PendingStatusChange = {
@@ -43,6 +44,7 @@ export const useBillTable = () => {
   const [searchInput, setSearchInput] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [selectedMedicalStore, setSelectedMedicalStore] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState("");
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs] | null>(null);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -58,6 +60,21 @@ export const useBillTable = () => {
     label: store.name || "Unnamed Medical Store",
   }));
 
+  const scopedCompanyStoreId = selectedMedicalStore || "";
+  const shouldLoadCompanies = isAdmin ? true : Boolean(scopedCompanyStoreId);
+  const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(
+    scopedCompanyStoreId,
+    shouldLoadCompanies
+  );
+  const rawCompanies = companiesData?.companies || [];
+  const companyOptions =
+    isAdmin && !scopedCompanyStoreId
+      ? rawCompanies.map((company: any) => ({
+          value: company._id,
+          label: company.name,
+        }))
+      : buildCompanyOptions(rawCompanies, scopedCompanyStoreId);
+
   const medicalStoreNameById = useMemo(
     () => new Map<string, string>(stores.map((store) => [String(store._id), store.name || "Unnamed Medical Store"])),
     [stores]
@@ -69,17 +86,22 @@ export const useBillTable = () => {
     }
   }, [isAdmin, medicalStoreOptions, selectedMedicalStore]);
 
+  useEffect(() => {
+    setSelectedCompany("");
+  }, [selectedMedicalStore]);
+
   const fromDate = dateRange?.[0]?.format("YYYY-MM-DD");
   const toDate = dateRange?.[1]?.format("YYYY-MM-DD");
 
   const { data, isLoading, isError, error, isFetching } = useQuery({
-    queryKey: ["bills", searchValue, fromDate, toDate, selectedMedicalStore, statusTab, page, limit],
+    queryKey: ["bills", searchValue, fromDate, toDate, selectedMedicalStore, selectedCompany, statusTab, page, limit],
     queryFn: () =>
       getAllBillsByQuery({
         search: searchValue || undefined,
         fromDate,
         toDate,
         medicalStoreId: isAdmin ? selectedMedicalStore || undefined : undefined,
+        companyId: selectedCompany || undefined,
         isActive: statusTab === "active",
         page,
         limit,
@@ -95,10 +117,11 @@ export const useBillTable = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [statusTab, searchValue, fromDate, toDate, selectedMedicalStore]);
+  }, [statusTab, searchValue, fromDate, toDate, selectedMedicalStore, selectedCompany]);
 
   const refreshBills = () => queryClient.invalidateQueries({ queryKey: ["bills"] });
 
+  //delete and status mutations
   const deleteMutation = useMutation({
     mutationFn: deleteBill,
     onSuccess: () => {
@@ -108,6 +131,7 @@ export const useBillTable = () => {
     onError: () => notify.error("Failed to delete bill."),
   });
 
+  // Status change mutation with 10 second confirmation timer
   const statusMutation = useMutation({
     mutationFn: (payload: { id: string; isActive: boolean }) => updateBillStatus(payload.id, payload.isActive),
     onSuccess: (_, payload) => {
@@ -180,6 +204,8 @@ export const useBillTable = () => {
     setSearchInput,
     selectedMedicalStore,
     setSelectedMedicalStore,
+    selectedCompany,
+    setSelectedCompany,
     dateRange,
     onRangeChange,
     page,
@@ -188,6 +214,8 @@ export const useBillTable = () => {
     setLimit,
     pendingStatus,
     medicalStoreOptions,
+    companyOptions,
+    isCompaniesLoading,
     bills: (data?.bills || []) as BillRecord[],
     total: data?.pagination?.total || 0,
     totalPages: data?.pagination?.totalPages || 0,

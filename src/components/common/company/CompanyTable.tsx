@@ -30,10 +30,10 @@ const CompanyTable = () => {
     setStatusTab,
     searchInput,
     setSearchInput,
-    sortOrder,
-    setSortOrder,
     selectedMedicalStore,
     setSelectedMedicalStore,
+    sortOrder,
+    setSortOrder,
     page,
     setPage,
     limit,
@@ -207,11 +207,15 @@ const CompanyTable = () => {
 
             {isAdmin && (
               <Select
-                value={sortOrder}
-                onChange={(value) => setSortOrder(value)}
+                value={sortOrder || undefined}
+                onChange={(value) => setSortOrder(value || "")}
                 options={sortOptions}
-                  suffixIcon={<SortAscendingOutlined />}
-                  className={`${tableSelectClass} !w-full sm:!w-[210px]`}
+                showSearch
+                optionFilterProp="label"
+                suffixIcon={<SortAscendingOutlined />}
+                allowClear
+                placeholder="Sort by added by"
+                className={`${tableSelectClass} !w-full sm:!w-[210px]`}
               />
             )}
           </div>

@@ -16,7 +16,7 @@ import { useConfirm } from "../components/common/confirm/ConfirmProvider";
 export const useCompanies = (medicalStoreId: string, enabled = Boolean(medicalStoreId)) =>
   useQuery({
     queryKey: ["companies", medicalStoreId],
-    queryFn: () => getAllCompaniesByQuery({ medicalStoreId: medicalStoreId || undefined }),
+    queryFn: () => getAllCompaniesByQuery({ medicalStoreId: medicalStoreId || undefined, all: true }),
     enabled,
     placeholderData: keepPreviousData,
   });

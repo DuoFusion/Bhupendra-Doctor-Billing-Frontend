@@ -129,6 +129,8 @@ const ProfileDetailsUserFormFields = ({
             <Select
               placeholder="Select tax type"
               disabled={!selectedMedicalStoreId}
+              showSearch
+              optionFilterProp="label"
               options={[
                 { value: "SGST_CGST", label: "SGST + CGST" },
                 { value: "IGST", label: "IGST" },

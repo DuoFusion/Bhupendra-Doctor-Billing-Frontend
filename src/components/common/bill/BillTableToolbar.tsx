@@ -20,7 +20,11 @@ type BillTableToolbarProps = {
   setSearchInput: (value: string) => void;
   selectedMedicalStore: string;
   setSelectedMedicalStore: (value: string) => void;
+  selectedCompany: string;
+  setSelectedCompany: (value: string) => void;
   medicalStoreOptions: Array<{ value: string; label: string }>;
+  companyOptions: Array<{ value: string; label: string }>;
+  isCompaniesLoading: boolean;
   dateRange: [Dayjs, Dayjs] | null;
   onRangeChange: (values: null | [Dayjs | null, Dayjs | null]) => void;
   onGenerate: () => void;
@@ -32,7 +36,11 @@ const BillTableToolbar = ({
   setSearchInput,
   selectedMedicalStore,
   setSelectedMedicalStore,
+  selectedCompany,
+  setSelectedCompany,
   medicalStoreOptions,
+  companyOptions,
+  isCompaniesLoading,
   dateRange,
   onRangeChange,
   onGenerate,
@@ -61,6 +69,19 @@ const BillTableToolbar = ({
             className={`${tableSelectClass} !w-full sm:!w-[280px]`}
           />
         )}
+
+        <Select
+          value={selectedCompany || undefined}
+          onChange={(value) => setSelectedCompany(value || "")}
+          options={companyOptions}
+          allowClear
+          showSearch
+          optionFilterProp="label"
+          placeholder="Select company"
+          loading={isCompaniesLoading}
+          disabled={!companyOptions.length && isCompaniesLoading}
+          className={`${tableSelectClass} !w-full sm:!w-[260px]`}
+        />
 
         <RangePicker
           value={dateRange}

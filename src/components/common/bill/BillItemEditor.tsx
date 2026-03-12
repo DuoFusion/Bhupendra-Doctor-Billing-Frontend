@@ -84,6 +84,8 @@ const BillItemEditor = ({
             value: product._id,
             label: product.name,
           }))}
+          showSearch
+          optionFilterProp="label"
           placeholder="Select Product"
           className={selectClass}
           loading={isProductsLoading}
@@ -128,10 +130,6 @@ const BillItemEditor = ({
           min={0}
           className={inputClass}
         />
-
-        {itemErrors.rate && (
-          <p className="mt-2.5 text-sm text-red-600">{itemErrors.rate}</p>
-        )}
       </div>
 
       {/* Qty */}
@@ -146,7 +144,7 @@ const BillItemEditor = ({
           onChange={(event) =>
             setQty(event.target.value === "" ? "" : Number(event.target.value))
           }
-          min={1}
+          min={0}
           className={inputClass}
         />
 

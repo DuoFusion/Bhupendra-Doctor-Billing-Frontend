@@ -14,8 +14,11 @@ export const getAllProducts = async (params?: {
   billable?: boolean;
   medicalStoreId?: string;
   isActive?: boolean;
+  all?: boolean;
 }) => {
-  const response = await API.get(URL_KEYS.PRODUCT.GET_PRODUCT, { params });
+  const response = await API.get(URL_KEYS.PRODUCT.GET_PRODUCT, {
+    params: { all: true, ...params },
+  });
   return response.data;
 };
 
@@ -30,8 +33,11 @@ export const getAllProductsByQuery = async (params: {
   billable?: boolean;
   medicalStoreId?: string;
   isActive?: boolean;
+  all?: boolean;
 }) => {
-  const response = await API.get(URL_KEYS.PRODUCT.GET_PRODUCT, { params });
+  const response = await API.get(URL_KEYS.PRODUCT.GET_PRODUCT, {
+    params,
+  });
   return response.data;
 };
 

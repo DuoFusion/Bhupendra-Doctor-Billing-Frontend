@@ -191,6 +191,8 @@ const ProductTable = () => {
               onChange={(value) => setSelectedCategory(value || "")}
               options={categoryOptions}
               allowClear
+              showSearch
+              optionFilterProp="label"
               placeholder="All categories"
               className={`${tableSelectClass} !w-full sm:!w-[210px]`}
             />

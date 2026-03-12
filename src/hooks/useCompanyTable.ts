@@ -33,7 +33,7 @@ export const useCompanyTable = () => {
   const [statusTab, setStatusTab] = useState<CompanyStatusTab>("active");
   const [searchInput, setSearchInput] = useState("");
   const [searchValue, setSearchValue] = useState("");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortOrder, setSortOrder] = useState<"" | "asc" | "desc">("");
   const [selectedMedicalStore, setSelectedMedicalStore] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -63,8 +63,7 @@ export const useCompanyTable = () => {
     queryFn: () =>
       getAllCompaniesByQuery({
         search: searchValue || undefined,
-        sortBy: "addedBy",
-        order: sortOrder,
+        ...(isAdmin && sortOrder ? { sortBy: "addedBy", order: sortOrder } : {}),
         medicalStoreId: isAdmin ? selectedMedicalStore || undefined : undefined,
         isActive: statusTab === "active",
         page,

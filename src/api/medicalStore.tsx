@@ -29,13 +29,17 @@ const normalizeStoreList = (payload: any): StoreListResponse => {
 
 // ============ Get All Medical Stores ============
 export const getAllMedicalStores = async () => {
-  const response = await API.get(URL_KEYS.MEDICAL_STORE.GET_STORES);
+  const response = await API.get(URL_KEYS.MEDICAL_STORE.GET_STORES, {
+    params: { all: true },
+  });
   return normalizeStoreList(response.data);
 };
 
 // ============ Get All Medical Stores By Query ============
-export const getAllMedicalStoresByQuery = async (params: { page?: number; limit?: number; search?: string; isActive?: boolean; }) => {
-  const response = await API.get(URL_KEYS.MEDICAL_STORE.GET_STORES, { params });
+export const getAllMedicalStoresByQuery = async (params: { page?: number; limit?: number; search?: string; isActive?: boolean; all?: boolean; }) => {
+  const response = await API.get(URL_KEYS.MEDICAL_STORE.GET_STORES, {
+    params,
+  });
   return normalizeStoreList(response.data);
 };
 

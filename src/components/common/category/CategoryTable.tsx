@@ -43,10 +43,10 @@ const CategoryTable = () => {
     setStatusTab,
     searchInput,
     setSearchInput,
-    sortOrder,
-    setSortOrder,
     selectedMedicalStore,
     setSelectedMedicalStore,
+    sortOrder,
+    setSortOrder,
     page,
     setPage,
     limit,
@@ -189,10 +189,14 @@ const CategoryTable = () => {
 
               {isAdmin && (
                 <Select
-                  value={sortOrder}
-                  onChange={(value) => setSortOrder(value)}
+                  value={sortOrder || undefined}
+                  onChange={(value) => setSortOrder(value || "")}
                   options={categorySortOptions}
+                  showSearch
+                  optionFilterProp="label"
                   suffixIcon={<SortAscendingOutlined />}
+                  allowClear
+                  placeholder="Sort by added by"
                   className={`${tableSelectClass} !w-full sm:!w-[210px]`}
                 />
               )}
