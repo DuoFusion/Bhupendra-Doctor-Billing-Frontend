@@ -45,6 +45,12 @@ export const ROUTES = {
     ADD_CATEGORY: "/add-category",
   },
 
+  FINANCIAL: {
+    GET_FINANCIAL: "/financial",
+    ADD_FINANCIAL: "/add-financial",
+    UPDATE_FINANCIAL: "/update-financial/:id",
+  },
+
   MEDICAL_STORE: {
     GET_MEDICAL_STORES: "/medical-store",
     ADD_MEDICAL_STORE: "/add-medical-store",

@@ -4,3 +4,4 @@ export * from "./company";
 export * from "./bills";
 export * from "./profile";
 export * from "./dashboard";
+export * from "./financial";

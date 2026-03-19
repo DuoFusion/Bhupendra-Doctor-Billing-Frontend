@@ -39,6 +39,13 @@ const formatPurchaseDate = (value?: string) => {
   if (Number.isNaN(parsed.getTime())) return "";
   return parsed.toISOString().slice(0, 10);
 };
+const getTodayDateString = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 // ============ Resolve bill edit record ============
 const getEditBillRecord = (data: unknown) => {
@@ -205,6 +212,7 @@ export const useBillForm = () => {
     setSelectedCompany("");
     setItems([]);
     resetItemEditor();
+    setPurchaseDate((prev) => prev || getTodayDateString());
   }, [isEdit, selectedMedicalStoreId]);
 
   useEffect(() => {

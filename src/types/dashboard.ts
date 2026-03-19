@@ -4,6 +4,12 @@ export type DashboardStats = {
   dueBills: number;
   paidAmount: number;
   dueAmount: number;
+  financials: number;
+  incomeCount: number;
+  expenseCount: number;
+  financialAmount: number;
+  incomeAmount: number;
+  expenseAmount: number;
   products: number;
   companies: number;
   categories: number;

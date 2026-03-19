@@ -29,6 +29,10 @@ export const routes = [
   { path: ROUTES.CATEGORY.GET_CATEGORIES, title: "Category Management" },
   { path: ROUTES.CATEGORY.ADD_CATEGORY, title: "Add Category" },
 
+  { path: ROUTES.FINANCIAL.GET_FINANCIAL, title: "Financial Management" },
+  { path: ROUTES.FINANCIAL.ADD_FINANCIAL, title: "Add Financial Record" },
+  { path: ROUTES.FINANCIAL.UPDATE_FINANCIAL, title: "Update Financial Record" },
+
   { path: ROUTES.MEDICAL_STORE.GET_MEDICAL_STORES, title: "Medical Store Management" },
   { path: ROUTES.MEDICAL_STORE.ADD_MEDICAL_STORE, title: "Add Medical Store" },
   { path: ROUTES.MEDICAL_STORE.UPDATE_MEDICAL_STORE, title: "Update Medical Store" }

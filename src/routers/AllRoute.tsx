@@ -20,6 +20,8 @@ const CompanyDetails = lazy(() => import("../pages/global/company/CompanyDetails
 const Bills = lazy(() => import("../pages/global/bill/Bills"));
 const Category = lazy(() => import("../pages/global/category/Category"));
 const AddCategory = lazy(() => import("../pages/global/category/AddCategory"));
+const Financial = lazy(() => import("../pages/global/financial/Financial"));
+const AddFinancial = lazy(() => import("../pages/global/financial/AddFinancial"));
 const AddCompany = lazy(() => import("../pages/global/company/AddCompany"));
 const AddProduct = lazy(() => import("../pages/global/product/AddProduct"));
 const GenerateBill = lazy(() => import("../pages/global/bill/GenerateBill"));
@@ -41,9 +43,12 @@ const sharedRoutes = [
   { path: ROUTES.CATEGORY.GET_CATEGORIES, element: <Category /> },
   { path: ROUTES.COMPANY.GET_COMPANY, element: <Companies /> },
   { path: ROUTES.BILL.GET_BILLS, element: <Bills /> },
+  { path: ROUTES.FINANCIAL.GET_FINANCIAL, element: <Financial /> },
   { path: ROUTES.PRODUCTS.ADD_PRODUCT, element: <AddProduct /> },
   { path: ROUTES.CATEGORY.ADD_CATEGORY, element: <AddCategory /> },
+  { path: ROUTES.FINANCIAL.ADD_FINANCIAL, element: <AddFinancial /> },
   { path: ROUTES.PRODUCTS.UPDATE_PRODUCT, element: <AddProduct /> },
+  { path: ROUTES.FINANCIAL.UPDATE_FINANCIAL, element: <AddFinancial /> },
   { path: ROUTES.COMPANY.ADD_COMPANY, element: <AddCompany /> },
   { path: ROUTES.COMPANY.UPDATE_COMPANY, element: <AddCompany /> },
   { path: ROUTES.COMPANY.VIEW_COMPANY, element: <CompanyDetails /> },

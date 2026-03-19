@@ -57,6 +57,15 @@ export const URL_KEYS = {
     DELETE_CATEGORY: "/category/delete/:id",
   },
 
+  FINANCIAL: {
+    GET_FINANCIAL: "/financial/all",
+    ADD_FINANCIAL: "/financial/add",
+    GET_FINANCIAL_BY_ID: "/financial/:id",
+    UPDATE_FINANCIAL: "/financial/:id",
+    UPDATE_FINANCIAL_STATUS: "/financial/:id/status",
+    DELETE_FINANCIAL: "/financial/delete/:id",
+  },
+
   MEDICAL_STORE: {
     GET_STORES: "/medical-store/all",
     GET_STORE_BY_ID: "/medical-store/:id",
@@ -77,4 +86,3 @@ export const URL_KEYS = {
     DELETE: "/upload",
   },
 };
-

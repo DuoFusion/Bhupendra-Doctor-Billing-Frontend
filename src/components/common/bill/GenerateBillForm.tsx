@@ -1,4 +1,5 @@
-import { Button, Card, Input, Radio, Select, Spin, Switch, Typography } from "antd";
+import { Button, Card, DatePicker, Input, Radio, Select, Spin, Switch, Typography } from "antd";
+import dayjs from "dayjs";
 import { useBillForm } from "../../../hooks";
 import BillAmountSummary from "./BillAmountSummary";
 import BillItemEditor from "./BillItemEditor";
@@ -17,10 +18,11 @@ const requiredLabel = (label: string) => (
 );
 
 const inputClass = "!h-11 !rounded-lg";
-const selectClass =
-  "!h-11 !w-full [&_.ant-select-selector]:!h-11 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-[#cfe4b7] [&_.ant-select-selection-item]:!leading-[42px] [&_.ant-select-selection-placeholder]:!leading-[42px]";
-const secondaryButtonClass =
-  "!h-11 !rounded-lg !border-[#cfe4b7] !bg-[#f7fde8] !px-6 !text-[#4f6841] hover:!border-[#b8d69a] hover:!bg-[#ebffd8] hover:!text-[#3a592b]";
+const datePickerClass = "!h-11 !w-full !rounded-lg !border-[#cfe4b7] !bg-[#fefffc] hover:!border-[#b8d69a]";
+const selectClass ="!h-11 !w-full [&_.ant-select-selector]:!h-11 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-[#cfe4b7] [&_.ant-select-selection-item]:!leading-[42px] [&_.ant-select-selection-placeholder]:!leading-[42px]";
+const secondaryButtonClass ="!h-11 !rounded-lg !border-[#cfe4b7] !bg-[#f7fde8] !px-6 !text-[#4f6841] hover:!border-[#b8d69a] hover:!bg-[#ebffd8] hover:!text-[#3a592b]";
+const purchaseDatePresets = [ { label: "Today", value: dayjs() }, { label: "Tomorrow", value: dayjs().add(1, "day") }, { label: "Yesterday", value: dayjs().subtract(1, "day") },];
+
 const GenerateBillForm = () => {
   const {
     isEdit,
@@ -156,12 +158,12 @@ const GenerateBillForm = () => {
 
             <div>
               <Typography.Text className="!mb-2 !block">{requiredLabel("Purchase Date")}</Typography.Text>
-              <Input
-                type="date"
-                value={purchaseDate}
-                onChange={(event) => setPurchaseDate(event.target.value)}
-                required
-                className={inputClass}
+              <DatePicker
+                value={purchaseDate ? dayjs(purchaseDate) : null}
+                onChange={(value) => setPurchaseDate(value ? value.format("YYYY-MM-DD") : "")}
+                presets={purchaseDatePresets}
+                className={datePickerClass}
+                allowClear
               />
               {formErrors.purchaseDate && <p className="mt-2.5 text-sm text-red-600">{formErrors.purchaseDate}</p>}
             </div>
@@ -190,28 +192,8 @@ const GenerateBillForm = () => {
           </div>
 
           <div className="rounded-xl border border-[#d9e7c8] bg-[#fefffc] p-5">
-            <BillItemEditor
-              selectedProduct={selectedProduct}
-              setSelectedProduct={setSelectedProduct}
-              qty={qty}
-              setQty={setQty}
-              freeQty={freeQty}
-              setFreeQty={setFreeQty}
-              mrp={mrp}
-              setMrp={setMrp}
-              rate={rate}
-              setRate={setRate}
-              productsForStore={productsForStore}
-              isProductsLoading={isProductsLoading || isProductsFetching}
-              itemErrors={itemErrors}
-              editingItemIndex={editingItemIndex}
-              itemCount={items.length}
-              onAddItem={addItemToList}
-              onCancelEdit={resetItemEditor}
-            />
-
+            <BillItemEditor selectedProduct={selectedProduct} setSelectedProduct={setSelectedProduct} qty={qty} setQty={setQty} freeQty={freeQty} setFreeQty={setFreeQty} mrp={mrp} setMrp={setMrp} rate={rate} setRate={setRate} productsForStore={productsForStore} isProductsLoading={isProductsLoading || isProductsFetching} itemErrors={itemErrors} editingItemIndex={editingItemIndex} itemCount={items.length} onAddItem={addItemToList} onCancelEdit={resetItemEditor}/>
             {formErrors.items && <p className="mt-3 text-sm text-red-600">{formErrors.items}</p>}
-
             <BillItemsTable items={items} onEdit={editItem} onRemove={removeItem} />
           </div>
 
@@ -225,14 +207,7 @@ const GenerateBillForm = () => {
             <Typography.Text className="!mb-2 !block">
               <span className="font-medium text-[#607257]">Bill Discount</span>
             </Typography.Text>
-            <Input
-              step={0.01}
-              type="number"
-              value={billDiscount}
-              onChange={(event) => setBillDiscount(event.target.value === "" ? "" : Number(event.target.value))}
-              min={0}
-              className={inputClass}
-            />
+            <Input step={0.01} type="number" value={billDiscount} onChange={(event) => setBillDiscount(event.target.value === "" ? "" : Number(event.target.value))} min={0} className={inputClass}/>
           </div>
 
           <div>
@@ -245,19 +220,7 @@ const GenerateBillForm = () => {
             </div>
           </div>
 
-          <BillAmountSummary
-            subtotal={discountedSubtotal}
-            taxType={taxType}
-            taxPercent={taxPercent}
-            sgstAmount={sgstAmount}
-            cgstAmount={cgstAmount}
-            igstAmount={igstAmount}
-            sgstPercent={sgstPercent}
-            cgstPercent={cgstPercent}
-            showGst={isGstEnabled}
-            discount={billDiscount}
-            grandTotal={grandTotal}
-          />
+          <BillAmountSummary  subtotal={discountedSubtotal}  taxType={taxType}  taxPercent={taxPercent}  sgstAmount={sgstAmount}  cgstAmount={cgstAmount}  igstAmount={igstAmount}  sgstPercent={sgstPercent}  cgstPercent={cgstPercent}  showGst={isGstEnabled}  discount={billDiscount}  grandTotal={grandTotal} />
 
           <div className="flex flex-wrap justify-end gap-3 pt-2">
             <Button onClick={goBack} className={secondaryButtonClass}>

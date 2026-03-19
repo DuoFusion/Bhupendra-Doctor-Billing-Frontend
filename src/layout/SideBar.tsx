@@ -15,6 +15,7 @@ import {
   UserPlus,
   FileText,
   Tags,
+  CircleDollarSign,
 } from "lucide-react";
 import { useMemo, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -67,18 +68,20 @@ const SideBar: React.FC<SideBarProps> = ({
     { id: 5, text: "Category", path: ROUTES.CATEGORY.GET_CATEGORIES, icon: <Tags size={18} /> },
     { id: 6, text: "Company", path: ROUTES.COMPANY.GET_COMPANY, icon: <Building2 size={18} /> },
     { id: 7, text: "Bills", path: ROUTES.BILL.GET_BILLS, icon: <FileText size={18} /> },
+    { id: 8, text: "Financial", path: ROUTES.FINANCIAL.GET_FINANCIAL, icon: <CircleDollarSign size={18} /> },
   ];
 
   const userMenu: SidebarMenuItem[] = [
-    { id: 8, text: "Dashboard", path: ROUTES.USER.DASHBOARD, icon: <LayoutDashboard size={18} /> },
-    { id: 9, text: "Products", path: ROUTES.PRODUCTS.GET_PRODUCTS, icon: <Package size={18} /> },
-    { id: 10, text: "Category", path: ROUTES.CATEGORY.GET_CATEGORIES, icon: <Tags size={18} /> },
-    { id: 11, text: "Company", path: ROUTES.COMPANY.GET_COMPANY, icon: <Building2 size={18} /> },
-    { id: 12, text: "Bills", path: ROUTES.BILL.GET_BILLS, icon: <FileText size={18} /> },
+    { id: 9, text: "Dashboard", path: ROUTES.USER.DASHBOARD, icon: <LayoutDashboard size={18} /> },
+    { id: 10, text: "Products", path: ROUTES.PRODUCTS.GET_PRODUCTS, icon: <Package size={18} /> },
+    { id: 11, text: "Category", path: ROUTES.CATEGORY.GET_CATEGORIES, icon: <Tags size={18} /> },
+    { id: 12, text: "Company", path: ROUTES.COMPANY.GET_COMPANY, icon: <Building2 size={18} /> },
+    { id: 13, text: "Bills", path: ROUTES.BILL.GET_BILLS, icon: <FileText size={18} /> },
+    { id: 14, text: "Financial", path: ROUTES.FINANCIAL.GET_FINANCIAL, icon: <CircleDollarSign size={18} /> },
   ];
 
   const guestMenu: SidebarMenuItem[] = [
-    { id: 13, text: "Sign In", path: ROUTES.AUTH.SIGNIN, icon: <LogIn size={18} /> },
+    { id: 15, text: "Sign In", path: ROUTES.AUTH.SIGNIN, icon: <LogIn size={18} /> },
   ];
 
   const menu = role === "admin" ? adminMenu : role === "user" ? userMenu : guestMenu;
